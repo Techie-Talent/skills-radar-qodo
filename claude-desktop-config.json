@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "skills-radar-npx": {
+      "command": "npx",
+      "args": ["tsx", "scripts/mcp-stdio-wrapper.ts"],
+      "env": {
+        "MCP_API_KEY": "sk_your_api_key_here",
+        "MCP_API_BASE_URL": "http://localhost:3000/api/mcp"
+      }
+    },
+    "skills-radar-node": {
+      "command": "node",
+      "args": ["scripts/mcp-wrapper.js"],
+      "env": {
+        "MCP_API_KEY": "sk_your_api_key_here",
+        "MCP_API_BASE_URL": "http://localhost:3000/api/mcp"
+      }
+    },
+    "skills-radar-shell": {
+      "command": "bash",
+      "args": ["scripts/mcp-wrapper.sh"],
+      "env": {
+        "MCP_API_KEY": "sk_your_api_key_here",
+        "MCP_API_BASE_URL": "http://localhost:3000/api/mcp"
+      }
+    }
+  }
+}

@@ -35,6 +35,7 @@ model Skill {
   categoryId      Int?
   scale           Scale?         @relation(fields: [scaleId], references: [id])
   scaleId         Int?
+  members         MemberSkill[]
 }
 
 model Scale {
@@ -48,12 +49,28 @@ model Scale {
 model Member {
   id            Int            @id @default(autoincrement())
   email         String         @unique
-  fullName      String
-  hireDate      DateTime
+  fullName      String?
+  hireDate      DateTime?
   currentClient String?
-  category      String         // e.g., Starter, Builder, Solver, Wizard
+  category      String?        // e.g., Starter, Builder, Solver, Wizard
   location      String?
   profile       MemberProfile?
+  skills        MemberSkill[]
+}
+
+model MemberSkill {
+  id           Int      @id @default(autoincrement())
+  member       Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId     Int
+  skill        Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  skillId      Int
+  expertiseLevel Int?   // 1-4 based on the CSV data
+  expertiseDescription String? // Full description from CSV
+  assessmentDate DateTime? // Date when this skill was assessed
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([memberId, skillId])
 }
 
 model MemberProfile {
@@ -79,6 +96,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   lastLoginAt   DateTime?
+  apiKeys       ApiKey[]
 }
 
 model Role {
@@ -111,4 +129,21 @@ model RolePermission {
   createdAt    DateTime   @default(now())
 
   @@unique([roleId, permissionId])
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  label      String
+  keyHash    String    @unique
+  salt       String
+  owner      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId    String
+  scopes     String[]  // Array of scopes like ["skills:read", "members:read", "dashboards:read"]
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revoked    Boolean   @default(false)
+  revokedAt  DateTime?
+
+  @@index([keyHash])
+  @@index([ownerId])
 }

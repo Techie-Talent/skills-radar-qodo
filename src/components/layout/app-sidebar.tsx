@@ -15,6 +15,7 @@ import {
   Upload,
   Search,
   Home,
+  Key,
 } from 'lucide-react';
 
 import {
@@ -107,6 +108,12 @@ const navigationItems = [
         url: '/admin/roles',
         icon: Settings,
         permission: 'roles.read',
+      },
+      {
+        title: 'API Keys',
+        url: '/admin/api-keys',
+        icon: Key,
+        permission: 'admin.manage',
       },
     ],
   },

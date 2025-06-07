@@ -4,8 +4,22 @@ import { Button } from '@/components/ui/button';
 import ProtectedRoute from '@/components/auth/protected-route';
 import PermissionGuard from '@/components/auth/permission-guard';
 import SidebarLayout from '@/components/layout/sidebar-layout';
+import { getMembers, getKnowledgeAreas, getSkills } from '@/lib/data';
 
-export default function Home() {
+export default async function Home() {
+  // Load data for metrics
+  const [members, knowledgeAreas, skills] = await Promise.all([
+    getMembers().catch(() => []),
+    getKnowledgeAreas().catch(() => []),
+    getSkills().catch(() => []),
+  ]);
+
+  // Calculate metrics
+  const totalMembers = members.length;
+  const totalKnowledgeAreas = knowledgeAreas.length;
+  const totalSkills = skills.length;
+  const activeClients = [...new Set(members.map(m => m.currentClient).filter(Boolean))].length;
+
   return (
     <ProtectedRoute permission="dashboard.read">
       <SidebarLayout breadcrumbs={[{ label: 'Home' }]}>
@@ -25,7 +39,7 @@ export default function Home() {
                 <span className="text-2xl">👥</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">--</div>
+                <div className="text-2xl font-bold">{totalMembers}</div>
                 <p className="text-xs text-muted-foreground">
                   Active team members
                 </p>
@@ -37,7 +51,7 @@ export default function Home() {
                 <span className="text-2xl">🧠</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">--</div>
+                <div className="text-2xl font-bold">{totalKnowledgeAreas}</div>
                 <p className="text-xs text-muted-foreground">
                   Defined domains
                 </p>
@@ -49,7 +63,7 @@ export default function Home() {
                 <span className="text-2xl">⚡</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">--</div>
+                <div className="text-2xl font-bold">{totalSkills}</div>
                 <p className="text-xs text-muted-foreground">
                   Total skills tracked
                 </p>
@@ -57,13 +71,13 @@ export default function Home() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
+                <CardTitle className="text-sm font-medium">Active Clients</CardTitle>
                 <span className="text-2xl">📊</span>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">--</div>
+                <div className="text-2xl font-bold">{activeClients}</div>
                 <p className="text-xs text-muted-foreground">
-                  Ongoing assignments
+                  Current client assignments
                 </p>
               </CardContent>
             </Card>
@@ -119,12 +133,19 @@ export default function Home() {
                 <Button asChild className="w-full justify-start" variant="outline">
                   <Link href="/dashboard">
                     <span className="mr-2">📈</span>
-                    View Dashboard
+                    Analytics Dashboard
                   </Link>
                 </Button>
                 
                 <Button asChild className="w-full justify-start" variant="outline">
-                  <Link href="/dashboard/talent-search">
+                  <Link href="/members">
+                    <span className="mr-2">👥</span>
+                    Member Management
+                  </Link>
+                </Button>
+                
+                <Button asChild className="w-full justify-start" variant="outline">
+                  <Link href="/members/talent-search">
                     <span className="mr-2">🔍</span>
                     Talent Search
                   </Link>
