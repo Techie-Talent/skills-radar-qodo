@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model KnowledgeArea {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  skills      Skill[]
+}
+
+model SkillCategory {
+  id               Int      @id @default(autoincrement())
+  name             String   @unique
+  groupingCriteria String?
+  skills           Skill[]
+}
+
+model Skill {
+  id              Int            @id @default(autoincrement())
+  name            String         @unique
+  purpose         String?
+  knowledgeArea   KnowledgeArea? @relation(fields: [knowledgeAreaId], references: [id])
+  knowledgeAreaId Int?
+  category        SkillCategory? @relation(fields: [categoryId], references: [id])
+  categoryId      Int?
+  scale           Scale?         @relation(fields: [scaleId], references: [id])
+  scaleId         Int?
+}
+
+model Scale {
+  id     Int      @id @default(autoincrement())
+  name   String   @unique
+  type   String   // e.g., numeric, qualitative
+  values String   // e.g., '1,2,3,4,5' or 'A,B,C'
+  skills Skill[]
+}
+
+model Member {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  fullName      String
+  hireDate      DateTime
+  currentClient String?
+  category      String         // e.g., Starter, Builder, Solver, Wizard
+  location      String?
+  profile       MemberProfile?
+}
+
+model MemberProfile {
+  id                 Int      @id @default(autoincrement())
+  member             Member   @relation(fields: [memberId], references: [id])
+  memberId           Int      @unique
+  assignments        String?  // JSON or text
+  teamRoles          String?  // JSON or text
+  clientAppreciations String? // JSON or text
+  feedback           String?  // JSON or text
+  talentPoolPeriods  String?  // JSON or text
+}
+
+// Authentication and Authorization Models
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  googleId      String?   @unique
+  role          Role?     @relation(fields: [roleId], references: [id])
+  roleId        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  isDefault   Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  description String?
+  category    String           // e.g., "members", "skills", "admin"
+  action      String           // e.g., "read", "write", "delete"
+  createdAt   DateTime         @default(now())
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId       String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  permissionId String
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+}
