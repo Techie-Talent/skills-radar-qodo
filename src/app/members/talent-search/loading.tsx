@@ -5,7 +5,7 @@ import { DashboardSkeleton } from '@/components/ui/skeletons';
 export default function TalentSearchLoading() {
   return (
     <PermissionGuard permission="dashboard.read">
-      <SidebarLayout breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Dashboard', href: '/dashboard' }, { label: 'Talent Search' }]}>
+      <SidebarLayout breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Members', href: '/admin/members' }, { label: 'Talent Search' }]}>
         <DashboardSkeleton />
       </SidebarLayout>
     </PermissionGuard>

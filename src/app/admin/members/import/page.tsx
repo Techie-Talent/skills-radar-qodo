@@ -116,7 +116,7 @@ sarah.wilson@techietalent.net,Wizard,,2021-08-05,Enterprise Inc,London`;
     <PermissionGuard permission="members.write">
       <SidebarLayout breadcrumbs={[
         { label: 'Home', href: '/' }, 
-        { label: 'Team Members', href: '/admin/members' }, 
+        { label: 'Data Imports', href: '/admin/imports' }, 
         { label: 'Import Members' }
       ]}>
         <div className="space-y-6">
@@ -293,7 +293,7 @@ sarah.wilson@techietalent.net,Wizard,,2021-08-05,Enterprise Inc,London`;
                   )}
                   {result.success && (
                     <Button asChild className="mt-3">
-                      <Link href="/admin/members">
+                      <Link href="/members/talent-search">
                         View Members
                       </Link>
                     </Button>

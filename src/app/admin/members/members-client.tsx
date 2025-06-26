@@ -137,7 +137,12 @@ export default function MembersClient({ initialMembers }: MembersClientProps) {
         <div className="flex gap-4">
           <Button asChild variant="secondary">
             <Link href="/admin/members/import">
-              Import from Excel
+              Import Members
+            </Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href="/admin/members/import-profiles">
+              Import Profiles
             </Link>
           </Button>
           <Button onClick={() => setShowForm(true)}>
@@ -275,6 +280,15 @@ export default function MembersClient({ initialMembers }: MembersClientProps) {
                   {member.profile ? 'Has profile' : 'No profile'}
                 </span>
                 <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="default"
+                    asChild
+                  >
+                    <Link href={`/admin/members/${member.id}`}>
+                      View
+                    </Link>
+                  </Button>
                   <Button
                     size="sm"
                     variant="outline"

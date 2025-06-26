@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { User, Settings, BookOpen, Eye, Users } from "lucide-react";
 
 interface Member {
   id: number;
@@ -172,10 +174,24 @@ export default function TalentSearchClient({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Talent Search</h1>
+          <h1 className="text-3xl font-bold text-foreground">Team Members</h1>
           <p className="text-muted-foreground mt-2">
-            Advanced search and filtering for team members
+            Search, filter, and manage team members and their skills
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link href="/admin/imports">
+              <Settings className="h-4 w-4 mr-2" />
+              Data Imports
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/admin/members/new">
+              <Users className="h-4 w-4 mr-2" />
+              Add Member
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -360,6 +376,56 @@ export default function TalentSearchClient({
         </CardContent>
       </Card>
 
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Members</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{members.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {filteredMembers.length} shown
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Available</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {members.filter(m => !m.currentClient).length}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Not assigned to clients
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Knowledge Areas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{knowledgeAreas.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Available areas
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Skills</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{skills.length}</div>
+            <p className="text-xs text-muted-foreground">
+              Total skills
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Results */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMembers.map((member) => (
@@ -409,6 +475,28 @@ export default function TalentSearchClient({
                     {member.profile ? "Complete" : "Incomplete"}
                   </span>
                 </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="mt-4 pt-4 border-t flex gap-2">
+                <Button asChild size="sm" className="flex-1">
+                  <Link href={`/admin/members/${member.id}`}>
+                    <Eye className="h-3 w-3 mr-1" />
+                    View
+                  </Link>
+                </Button>
+                <Button asChild size="sm" variant="outline" className="flex-1">
+                  <Link href={`/admin/members/${member.id}/skills`}>
+                    <BookOpen className="h-3 w-3 mr-1" />
+                    Skills
+                  </Link>
+                </Button>
+                <Button asChild size="sm" variant="outline" className="flex-1">
+                  <Link href={`/admin/members/${member.id}/profile`}>
+                    <User className="h-3 w-3 mr-1" />
+                    Profile
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>

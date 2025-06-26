@@ -52,22 +52,16 @@ const navigationItems = [
         permission: 'dashboard.read',
       },
       {
-        title: 'Talent Search',
-        url: '/dashboard/talent-search',
-        icon: Search,
-        permission: 'dashboard.read',
+        title: 'Team Members',
+        url: '/members/talent-search',
+        icon: Users,
+        permission: 'members.read',
       },
     ],
   },
   {
     title: 'Data Management',
     items: [
-      {
-        title: 'Team Members',
-        url: '/admin/members',
-        icon: Users,
-        permission: 'members.read',
-      },
       {
         title: 'Knowledge Areas',
         url: '/admin/knowledge-areas',
@@ -98,6 +92,12 @@ const navigationItems = [
     title: 'Administration',
     items: [
       {
+        title: 'Data Imports',
+        url: '/admin/imports',
+        icon: Upload,
+        permission: 'members.write',
+      },
+      {
         title: 'User Management',
         url: '/admin/users',
         icon: UserCog,
@@ -114,17 +114,6 @@ const navigationItems = [
         url: '/admin/api-keys',
         icon: Key,
         permission: 'admin.manage',
-      },
-    ],
-  },
-  {
-    title: 'Tools',
-    items: [
-      {
-        title: 'Import Members',
-        url: '/admin/members/import',
-        icon: Upload,
-        permission: 'members.write',
       },
     ],
   },

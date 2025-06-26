@@ -245,6 +245,13 @@ export default function MembersClient({ members, knowledgeAreas, skills }: Membe
                   </span>
                 </div>
               </div>
+              <div className="mt-4 pt-4 border-t">
+                <Button asChild size="sm" className="w-full">
+                  <Link href={`/admin/members/${member.id}`}>
+                    View Details & Skills
+                  </Link>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}

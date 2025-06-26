@@ -389,10 +389,13 @@ export default function DashboardClient({
         </div>
         <div className="flex gap-4">
           <Button asChild>
-            <Link href="/members">Member Management</Link>
+            <Link href="/admin/members">Member Management</Link>
           </Button>
           <Button asChild variant="outline">
             <Link href="/members/talent-search">Talent Search</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/dashboard/advanced-filters">Advanced Filters</Link>
           </Button>
         </div>
       </div>

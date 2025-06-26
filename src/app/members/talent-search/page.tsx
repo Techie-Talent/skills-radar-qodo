@@ -12,8 +12,8 @@ export default async function TalentSearchPage() {
   ]);
 
   return (
-    <PermissionGuard permission="dashboard.read">
-      <SidebarLayout breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Member Management', href: '/members' }, { label: 'Talent Search' }]}>
+    <PermissionGuard permission="members.read">
+      <SidebarLayout breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Team Members' }]}>
         <TalentSearchClient 
           members={members}
           knowledgeAreas={knowledgeAreas}

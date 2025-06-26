@@ -113,7 +113,8 @@ A full-stack web application for managing and visualizing the skills of team mem
   - `/admin/api-keys` - Manage MCP API keys
 - **Dashboard Pages**:
   - `/dashboard` - Overview with filtering
-  - `/dashboard/talent-search` - Advanced talent search
+- **Member Pages**:
+  - `/members/talent-search` - Advanced talent search
 
 ### API Endpoints
 
