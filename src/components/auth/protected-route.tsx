@@ -48,7 +48,7 @@ export default function ProtectedRoute({ children, permission, fallback }: Props
           <CardHeader className="text-center">
             <CardTitle className="text-destructive">Access Denied</CardTitle>
             <CardDescription>
-              You don't have permission to access this page.
+              You don&apos;t have permission to access this page.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">

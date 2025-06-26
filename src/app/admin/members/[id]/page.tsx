@@ -13,6 +13,7 @@ async function getMemberWithSkills(id: string) {
   const member = await prisma.member.findUnique({
     where: { id: parseInt(id) },
     include: {
+      profile: true,
       skills: {
         include: {
           skill: {
@@ -128,8 +129,8 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Category:</span>
-                    <Badge className={getCategoryColor(member.category)}>
-                      {member.category}
+                    <Badge className={getCategoryColor(member.category || 'Unknown')}>
+                      {member.category || 'Unknown'}
                     </Badge>
                   </div>
                   
@@ -138,7 +139,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
                       <Calendar className="h-4 w-4" />
                       Hire Date:
                     </span>
-                    <span className="text-sm">{formatDate(member.hireDate)}</span>
+                    <span className="text-sm">{member.hireDate ? formatDate(member.hireDate.toString()) : 'Not set'}</span>
                   </div>
 
                   {member.location && (
@@ -178,7 +179,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
                     Skills Summary
                   </CardTitle>
                   <CardDescription>
-                    Overview of member's skills and expertise
+                    Overview of member&apos;s skills and expertise
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -254,7 +255,6 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
                             
                             {memberSkill.expertiseLevel && (
                               <Badge 
-                                size="sm" 
                                 className={getExpertiseLevelColor(memberSkill.expertiseLevel)}
                               >
                                 {getExpertiseLevelLabel(memberSkill.expertiseLevel)}
@@ -375,7 +375,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
                     <div>
                       <h3 className="text-lg font-medium">No Skills Assigned</h3>
                       <p className="text-muted-foreground">
-                        This member doesn't have any skills assigned yet.
+                        This member doesn&apos;t have any skills assigned yet.
                       </p>
                     </div>
                     <Button asChild>

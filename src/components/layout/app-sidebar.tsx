@@ -1,6 +1,5 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -13,7 +12,6 @@ import {
   Settings,
   UserCog,
   Upload,
-  Search,
   Home,
   Key,
 } from 'lucide-react';
@@ -29,9 +27,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { hasPermission } from '@/lib/permissions';
 import PermissionGuard from '@/components/auth/permission-guard';
 import SignInButton from '@/components/auth/sign-in-button';
 
@@ -120,7 +116,6 @@ const navigationItems = [
 ];
 
 export function AppSidebar() {
-  const { data: session } = useSession();
   const pathname = usePathname();
 
   return (

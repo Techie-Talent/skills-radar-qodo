@@ -16,7 +16,7 @@ interface Member {
   currentClient: string | null;
   category: string;
   location: string | null;
-  profile: any | null;
+  profile: { id: number } | null;
 }
 
 interface KnowledgeArea {

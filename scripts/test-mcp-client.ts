@@ -182,7 +182,7 @@ async function testMCPServer() {
     console.log('   ✅ Expert finding');
 
   } catch (error) {
-    console.error('\n❌ Test failed:', error.message);
+    console.error('\n❌ Test failed:', error instanceof Error ? error.message : String(error));
     console.log('\n🔧 Troubleshooting tips:');
     console.log('   1. Make sure the Skills Radar server is running: npm run dev');
     console.log('   2. Check your API key: export MCP_API_KEY="sk_your_actual_key"');

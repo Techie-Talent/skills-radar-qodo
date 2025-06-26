@@ -14,7 +14,7 @@ interface KnowledgeArea {
   id: number;
   name: string;
   description: string | null;
-  skills: any[];
+  skills: { id: number; name: string }[];
 }
 
 interface KnowledgeAreasClientProps {

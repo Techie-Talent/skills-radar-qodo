@@ -89,7 +89,7 @@ export default async function Home() {
               <CardHeader>
                 <CardTitle>Data Management</CardTitle>
                 <CardDescription>
-                  Manage your organization's skill data
+                  Manage your organization&apos;s skill data
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">

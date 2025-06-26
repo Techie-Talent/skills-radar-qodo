@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Build where clause
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (knowledgeAreaId) {
       where.knowledgeAreaId = parseInt(knowledgeAreaId);
     }
@@ -82,40 +82,63 @@ export async function GET(request: NextRequest) {
     });
 
     // Transform data for LLM consumption
-    const transformedSkills = skills.map((skill) => ({
-      skill_id: skill.id,
-      skill_name: skill.name,
-      skill_purpose: skill.purpose,
-      knowledge_area: skill.knowledgeArea ? {
-        id: skill.knowledgeArea.id,
-        name: skill.knowledgeArea.name,
-        description: skill.knowledgeArea.description,
-      } : null,
-      category: skill.category ? {
-        id: skill.category.id,
-        name: skill.category.name,
-        grouping_criteria: skill.category.groupingCriteria,
-      } : null,
-      scale: skill.scale ? {
-        id: skill.scale.id,
-        name: skill.scale.name,
-        type: skill.scale.type,
-        values: skill.scale.values.split(',').map(v => v.trim()),
-      } : null,
-      ...(includeMembers && {
-        member_count: skill.members?.length || 0,
-        members: skill.members?.map((memberSkill) => ({
-          member_id: memberSkill.member.id,
-          member_name: memberSkill.member.fullName,
-          member_email: memberSkill.member.email,
-          current_client: memberSkill.member.currentClient,
-          member_category: memberSkill.member.category,
-          expertise_level: memberSkill.expertiseLevel,
-          expertise_description: memberSkill.expertiseDescription,
-          assessment_date: memberSkill.assessmentDate,
-        })) || [],
-      }),
-    }));
+    const transformedSkills = skills.map((skill) => {
+      const baseData = {
+        skill_id: skill.id,
+        skill_name: skill.name,
+        skill_purpose: skill.purpose,
+        knowledge_area: skill.knowledgeArea ? {
+          id: skill.knowledgeArea.id,
+          name: skill.knowledgeArea.name,
+          description: skill.knowledgeArea.description,
+        } : null,
+        category: skill.category ? {
+          id: skill.category.id,
+          name: skill.category.name,
+          grouping_criteria: skill.category.groupingCriteria,
+        } : null,
+        scale: skill.scale ? {
+          id: skill.scale.id,
+          name: skill.scale.name,
+          type: skill.scale.type,
+          values: skill.scale.values.split(',').map(v => v.trim()),
+        } : null,
+      };
+
+      // Add members data if requested and available
+      if (includeMembers && 'members' in skill && skill.members) {
+        const membersData = skill.members.map((memberSkill) => {
+          // Type assertion since we know member is included when includeMembers is true
+          const memberWithRelations = memberSkill as typeof memberSkill & {
+            member: {
+              id: number;
+              email: string;
+              fullName: string;
+              currentClient: string | null;
+              category: string | null;
+            };
+          };
+          
+          return {
+            member_id: memberWithRelations.member.id,
+            member_name: memberWithRelations.member.fullName,
+            member_email: memberWithRelations.member.email,
+            current_client: memberWithRelations.member.currentClient,
+            member_category: memberWithRelations.member.category,
+            expertise_level: memberSkill.expertiseLevel,
+            expertise_description: memberSkill.expertiseDescription,
+            assessment_date: memberSkill.assessmentDate,
+          };
+        });
+
+        Object.assign(baseData, {
+          member_count: skill.members.length,
+          members: membersData,
+        });
+      }
+
+      return baseData;
+    });
 
     const metadata = {
       total_count: totalCount,

@@ -1,10 +1,14 @@
-import { NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { authenticateMcpRequest, createSuccessResponse, createErrorResponse } from '@/lib/mcp-auth';
+import { NextRequest } from "next/server";
+import { prisma } from "@/lib/prisma";
+import {
+  authenticateMcpRequest,
+  createSuccessResponse,
+  createErrorResponse,
+} from "@/lib/mcp-auth";
 
 export async function GET(request: NextRequest) {
   // Authenticate the request
-  const auth = await authenticateMcpRequest(request, 'members:read');
+  const auth = await authenticateMcpRequest(request, "members:read");
   if (!auth.success) {
     return auth.response;
   }
@@ -12,18 +16,18 @@ export async function GET(request: NextRequest) {
   try {
     // Parse query parameters
     const { searchParams } = new URL(request.url);
-    const knowledgeAreaId = searchParams.get('knowledge_area_id');
-    const skillId = searchParams.get('skill_id');
-    const currentClient = searchParams.get('current_client');
-    const category = searchParams.get('category');
-    const minExpertiseLevel = searchParams.get('min_expertise_level');
-    const includeSkills = searchParams.get('include_skills') === 'true';
-    const includeProfile = searchParams.get('include_profile') === 'true';
-    const limit = parseInt(searchParams.get('limit') || '100');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const knowledgeAreaId = searchParams.get("knowledge_area_id");
+    const skillId = searchParams.get("skill_id");
+    const currentClient = searchParams.get("current_client");
+    const category = searchParams.get("category");
+    const minExpertiseLevel = searchParams.get("min_expertise_level");
+    const includeSkills = searchParams.get("include_skills") === "true";
+    const includeProfile = searchParams.get("include_profile") === "true";
+    const limit = parseInt(searchParams.get("limit") || "100");
+    const offset = parseInt(searchParams.get("offset") || "0");
 
     // Build where clause for members
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (currentClient) {
       where.currentClient = currentClient;
     }
@@ -36,7 +40,9 @@ export async function GET(request: NextRequest) {
       where.skills = {
         some: {
           ...(skillId && { skillId: parseInt(skillId) }),
-          ...(minExpertiseLevel && { expertiseLevel: { gte: parseInt(minExpertiseLevel) } }),
+          ...(minExpertiseLevel && {
+            expertiseLevel: { gte: parseInt(minExpertiseLevel) },
+          }),
           ...(knowledgeAreaId && {
             skill: {
               knowledgeAreaId: parseInt(knowledgeAreaId),
@@ -74,8 +80,8 @@ export async function GET(request: NextRequest) {
               },
             },
             orderBy: [
-              { skill: { knowledgeArea: { name: 'asc' } } },
-              { skill: { name: 'asc' } },
+              { skill: { knowledgeArea: { name: "asc" } } },
+              { skill: { name: "asc" } },
             ],
           },
         }),
@@ -83,65 +89,107 @@ export async function GET(request: NextRequest) {
           profile: true,
         }),
       },
-      orderBy: [
-        { fullName: 'asc' },
-        { email: 'asc' },
-      ],
+      orderBy: [{ fullName: "asc" }, { email: "asc" }],
       take: limit,
       skip: offset,
     });
 
     // Transform data for LLM consumption
-    const transformedMembers = members.map((member) => ({
-      member_id: member.id,
-      email: member.email,
-      full_name: member.fullName,
-      hire_date: member.hireDate,
-      current_client: member.currentClient,
-      category: member.category,
-      location: member.location,
-      ...(includeSkills && {
-        skills_count: member.skills?.length || 0,
-        skills: member.skills?.map((memberSkill) => ({
-          skill_id: memberSkill.skill.id,
-          skill_name: memberSkill.skill.name,
-          skill_purpose: memberSkill.skill.purpose,
-          knowledge_area: memberSkill.skill.knowledgeArea ? {
-            id: memberSkill.skill.knowledgeArea.id,
-            name: memberSkill.skill.knowledgeArea.name,
-          } : null,
-          category: memberSkill.skill.category ? {
-            id: memberSkill.skill.category.id,
-            name: memberSkill.skill.category.name,
-          } : null,
-          expertise_level: memberSkill.expertiseLevel,
-          expertise_description: memberSkill.expertiseDescription,
-          assessment_date: memberSkill.assessmentDate,
-        })) || [],
-        // Group skills by knowledge area for easier consumption
-        skills_by_knowledge_area: member.skills?.reduce((acc, memberSkill) => {
-          const kaName = memberSkill.skill.knowledgeArea?.name || 'Uncategorized';
-          if (!acc[kaName]) {
-            acc[kaName] = [];
-          }
-          acc[kaName].push({
-            skill_name: memberSkill.skill.name,
+    const transformedMembers = members.map((member) => {
+      const baseData = {
+        member_id: member.id,
+        email: member.email,
+        full_name: member.fullName,
+        hire_date: member.hireDate,
+        current_client: member.currentClient,
+        category: member.category,
+        location: member.location,
+      };
+
+      // Add skills data if requested and available
+      if (includeSkills && "skills" in member && member.skills) {
+        const skillsData = member.skills.map((memberSkill) => {
+          // Type assertion since we know skill is included when includeSkills is true
+          const skillWithRelations = memberSkill as typeof memberSkill & {
+            skill: {
+              id: number;
+              name: string;
+              purpose: string | null;
+              knowledgeArea?: { id: number; name: string } | null;
+              category?: { id: number; name: string } | null;
+            };
+          };
+          
+          return {
+            skill_id: skillWithRelations.skill.id,
+            skill_name: skillWithRelations.skill.name,
+            skill_purpose: skillWithRelations.skill.purpose,
+            knowledge_area: skillWithRelations.skill.knowledgeArea
+              ? {
+                  id: skillWithRelations.skill.knowledgeArea.id,
+                  name: skillWithRelations.skill.knowledgeArea.name,
+                }
+              : null,
+            category: skillWithRelations.skill.category
+              ? {
+                  id: skillWithRelations.skill.category.id,
+                  name: skillWithRelations.skill.category.name,
+                }
+              : null,
             expertise_level: memberSkill.expertiseLevel,
             expertise_description: memberSkill.expertiseDescription,
-          });
-          return acc;
-        }, {} as Record<string, any[]>) || {},
-      }),
-      ...(includeProfile && member.profile && {
-        profile: {
-          assignments: member.profile.assignments,
-          team_roles: member.profile.teamRoles,
-          client_appreciations: member.profile.clientAppreciations,
-          feedback: member.profile.feedback,
-          talent_pool_periods: member.profile.talentPoolPeriods,
-        },
-      }),
-    }));
+            assessment_date: memberSkill.assessmentDate,
+          };
+        });
+
+        const skillsByKnowledgeArea = member.skills.reduce(
+          (acc: Record<string, unknown[]>, memberSkill) => {
+            // Type assertion since we know skill is included when includeSkills is true
+            const skillWithRelations = memberSkill as typeof memberSkill & {
+              skill: {
+                id: number;
+                name: string;
+                knowledgeArea?: { id: number; name: string } | null;
+              };
+            };
+            
+            const kaName =
+              skillWithRelations.skill.knowledgeArea?.name || "Uncategorized";
+            if (!acc[kaName]) {
+              acc[kaName] = [];
+            }
+            acc[kaName].push({
+              skill_name: skillWithRelations.skill.name,
+              expertise_level: memberSkill.expertiseLevel,
+              expertise_description: memberSkill.expertiseDescription,
+            });
+            return acc;
+          },
+          {} as Record<string, { skill_name: string; expertise_level: number; expertise_description: string | null }[]>
+        );
+
+        Object.assign(baseData, {
+          skills_count: member.skills.length,
+          skills: skillsData,
+          skills_by_knowledge_area: skillsByKnowledgeArea,
+        });
+      }
+
+      // Add profile data if requested and available
+      if (includeProfile && member.profile) {
+        Object.assign(baseData, {
+          profile: {
+            assignments: member.profile.assignments,
+            team_roles: member.profile.teamRoles,
+            client_appreciations: member.profile.clientAppreciations,
+            feedback: member.profile.feedback,
+            talent_pool_periods: member.profile.talentPoolPeriods,
+          },
+        });
+      }
+
+      return baseData;
+    });
 
     const metadata = {
       total_count: totalCount,
@@ -162,7 +210,7 @@ export async function GET(request: NextRequest) {
 
     return createSuccessResponse(transformedMembers, metadata);
   } catch (error) {
-    console.error('Error fetching members:', error);
-    return createErrorResponse('Internal server error', 500);
+    console.error("Error fetching members:", error);
+    return createErrorResponse("Internal server error", 500);
   }
 }

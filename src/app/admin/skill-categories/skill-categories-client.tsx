@@ -11,7 +11,7 @@ interface SkillCategory {
   id: number;
   name: string;
   groupingCriteria: string | null;
-  skills: any[];
+  skills: { id: number; name: string }[];
 }
 
 interface SkillCategoriesClientProps {

@@ -16,7 +16,7 @@ export interface AuthenticatedRequest extends NextRequest {
 export async function authenticateMcpRequest(
   request: NextRequest,
   requiredScope: string
-): Promise<{ success: true; keyData: any } | { success: false; response: NextResponse }> {
+): Promise<{ success: true; keyData: unknown } | { success: false; response: NextResponse }> {
   const apiKey = request.headers.get('x-api-key');
 
   if (!apiKey) {
@@ -73,8 +73,8 @@ export function createErrorResponse(message: string, status: number = 400) {
 /**
  * Helper function to create standardized success responses
  */
-export function createSuccessResponse(data: any, metadata?: any) {
-  const response: any = {
+export function createSuccessResponse(data: unknown, metadata?: unknown) {
+  const response: Record<string, unknown> = {
     data,
     timestamp: new Date().toISOString(),
   };

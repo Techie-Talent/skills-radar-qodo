@@ -6,7 +6,7 @@ import { hasPermission } from '@/lib/permissions';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -19,7 +19,7 @@ export async function GET(
     }
 
     const role = await prisma.role.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: {
         permissions: {
           include: {
@@ -49,7 +49,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -76,14 +76,14 @@ export async function PUT(
       await prisma.role.updateMany({
         where: { 
           isDefault: true,
-          id: { not: params.id }
+          id: { not: (await params).id }
         },
         data: { isDefault: false },
       });
     }
 
     const role = await prisma.role.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: {
         name,
         description,
@@ -128,7 +128,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -142,7 +142,7 @@ export async function DELETE(
 
     // Check if role has users
     const role = await prisma.role.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: {
         users: true,
       },
@@ -163,7 +163,7 @@ export async function DELETE(
     }
 
     await prisma.role.delete({
-      where: { id: params.id },
+      where: { id: (await params).id },
     });
 
     return NextResponse.json({ message: 'Role deleted successfully' });

@@ -4,8 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import SidebarLayout from '@/components/layout/sidebar-layout';
 import PermissionGuard from '@/components/auth/permission-guard';
 
@@ -83,7 +81,7 @@ export default function ImportMembersPage() {
           message: data.error || 'Import failed',
         });
       }
-    } catch (error) {
+    } catch {
       setResult({
         success: false,
         message: 'An error occurred during import',
@@ -364,7 +362,7 @@ sarah.wilson@techietalent.net,Wizard,,2021-08-05,Enterprise Inc,London`;
                 <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
                   <h4 className="font-medium text-blue-800 dark:text-blue-400 mb-2">Optional Fields & Auto-Inference</h4>
                   <div className="text-sm text-blue-700 space-y-1">
-                    <div>• <strong>fullName</strong>: If empty, automatically inferred from email (e.g., john.doe@company.com → "John Doe")</div>
+                    <div>• <strong>fullName</strong>: If empty, automatically inferred from email (e.g., john.doe@company.com → &quot;John Doe&quot;)</div>
                     <div>• <strong>hireDate</strong>: Use YYYY-MM-DD format (e.g., 2023-01-15)</div>
                     <div>• <strong>currentClient</strong>: Current client assignment</div>
                     <div>• <strong>location</strong>: Work location or office</div>
@@ -374,7 +372,7 @@ sarah.wilson@techietalent.net,Wizard,,2021-08-05,Enterprise Inc,London`;
                 <div className="p-4 bg-green-50 border border-green-200 rounded-md">
                   <h4 className="font-medium text-green-800 dark:text-green-400 mb-2">Column Order Flexibility</h4>
                   <div className="text-sm text-green-700">
-                    The import system supports flexible column ordering and various header names. You can use alternative headers like "name" for fullName, "hire_date" for hireDate, etc.
+                    The import system supports flexible column ordering and various header names. You can use alternative headers like &quot;name&quot; for fullName, &quot;hire_date&quot; for hireDate, etc.
                   </div>
                 </div>
               </div>

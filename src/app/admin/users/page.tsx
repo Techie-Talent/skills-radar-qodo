@@ -13,7 +13,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Select,
@@ -197,7 +196,7 @@ export default function UsersPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       {user.role && (
-                        <Badge variant={getRoleColor(user.role.name) as any}>
+                        <Badge variant={getRoleColor(user.role.name) as "destructive" | "default" | "secondary" | "outline"}>
                           {user.role.name}
                         </Badge>
                       )}

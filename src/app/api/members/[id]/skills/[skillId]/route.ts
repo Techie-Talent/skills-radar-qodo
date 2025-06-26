@@ -3,10 +3,11 @@ import { prisma } from '@/lib/prisma';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string; skillId: string } }
+  { params }: { params: Promise<{ id: string; skillId: string }> }
 ) {
   try {
-    const memberSkillId = parseInt(params.skillId);
+    const { skillId } = await params;
+    const memberSkillId = parseInt(skillId);
     const body = await request.json();
     const { expertiseLevel, expertiseDescription, assessmentDate } = body;
 
@@ -60,10 +61,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; skillId: string } }
+  { params }: { params: Promise<{ id: string; skillId: string }> }
 ) {
   try {
-    const memberSkillId = parseInt(params.skillId);
+    const { skillId } = await params;
+    const memberSkillId = parseInt(skillId);
 
     // Check if member skill exists
     const existingMemberSkill = await prisma.memberSkill.findUnique({

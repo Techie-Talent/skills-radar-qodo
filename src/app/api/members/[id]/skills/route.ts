@@ -3,10 +3,11 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const memberId = parseInt(params.id);
+    const { id } = await params;
+    const memberId = parseInt(id);
     const body = await request.json();
     const { skillId, expertiseLevel, expertiseDescription, assessmentDate } = body;
 
@@ -90,10 +91,11 @@ export async function POST(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const memberId = parseInt(params.id);
+    const { id } = await params;
+    const memberId = parseInt(id);
 
     // Check if member exists
     const member = await prisma.member.findUnique({

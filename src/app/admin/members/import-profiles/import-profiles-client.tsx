@@ -81,7 +81,7 @@ export default function ImportProfilesClient({ memberStats }: ImportProfilesClie
       } else {
         setError(data.error || 'Import failed');
       }
-    } catch (err) {
+    } catch {
       setError('Failed to import profiles. Please try again.');
     } finally {
       setImporting(false);

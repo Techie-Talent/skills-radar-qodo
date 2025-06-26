@@ -37,13 +37,13 @@ interface Member {
   currentClient: string | null;
   category: string;
   location: string | null;
-  profile: any | null;
+  profile: { id: number } | null;
 }
 
 interface KnowledgeArea {
   id: number;
   name: string;
-  skills: any[];
+  skills: { id: number; name: string }[];
 }
 
 interface Skill {
@@ -69,7 +69,7 @@ interface MemberSkill {
 interface SkillCategory {
   id: number;
   name: string;
-  skills: any[];
+  skills: { id: number; name: string }[];
 }
 
 interface DashboardClientProps {
@@ -85,8 +85,7 @@ export default function DashboardClient({
   knowledgeAreas,
   skills,
   memberSkills,
-  skillCategories,
-}: DashboardClientProps) {
+  }: DashboardClientProps) {
   // Chart type state
   const [chartTypes, setChartTypes] = useState({
     categoryDistribution: 'bar' as 'bar' | 'pie',
@@ -123,11 +122,11 @@ export default function DashboardClient({
     count: area.skills.length,
   }));
 
-  // Skills by category
-  const skillsByCategoryData = skillCategories.map((category) => ({
-    name: category.name,
-    count: category.skills.length,
-  }));
+  // Skills by category (unused but kept for potential future use)
+  // const skillsByCategoryData = skillCategories.map((category) => ({
+  //   name: category.name,
+  //   count: category.skills.length,
+  // }));
 
   // Expertise level distribution
   const expertiseLevelDistribution = memberSkills.reduce((acc, ms) => {
@@ -236,7 +235,7 @@ export default function DashboardClient({
 
   // Member categories by client chart data
   const memberCategoriesByClientData = Object.entries(memberCategoriesByClient).map(([client, categories]) => {
-    const data: any = { client };
+    const data: Record<string, unknown> = { client };
     Object.entries(categories).forEach(([category, count]) => {
       data[category] = count;
     });
@@ -307,7 +306,7 @@ export default function DashboardClient({
   } satisfies ChartConfig;
 
   // Chart rendering components
-  const renderBarChart = (data: any[], config: ChartConfig, dataKey: string = 'value', nameKey: string = 'name') => {
+  const renderBarChart = (data: Record<string, unknown>[], config: ChartConfig, dataKey: string = 'value', nameKey: string = 'name') => {
     // Check if data has individual colors (for category/expertise charts)
     const hasIndividualColors = data.some(item => item.color);
     
@@ -324,7 +323,7 @@ export default function DashboardClient({
             radius={4}
           >
             {hasIndividualColors && data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+              <Cell key={`cell-${index}`} fill={entry.color as string} />
             ))}
           </Bar>
         </BarChart>
@@ -332,7 +331,9 @@ export default function DashboardClient({
     );
   };
 
-  const renderPieChart = (data: any[], config: ChartConfig, nameKey: string = 'name', dataKey: string = 'value') => (
+  const renderPieChart = (data: Record<string, unknown>[], config: ChartConfig, dataKey: string = 'value') => {
+    // nameKey parameter removed as it's not used in pie charts
+    return (
     <ChartContainer config={config} className="h-[300px]">
       <PieChart>
         <Pie
@@ -346,16 +347,17 @@ export default function DashboardClient({
           dataKey={dataKey}
         >
           {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={entry.color || `hsl(${index * 45}, 70%, 50%)`} />
+            <Cell key={`cell-${index}`} fill={(entry.color as string) || `hsl(${index * 45}, 70%, 50%)`} />
           ))}
         </Pie>
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
       </PieChart>
     </ChartContainer>
-  );
+    );
+  };
 
-  const renderStackedBarChart = (data: any[], categories: string[], config: ChartConfig) => (
+  const renderStackedBarChart = (data: Record<string, unknown>[], categories: string[], config: ChartConfig) => (
     <ChartContainer config={config} className="h-[300px]">
       <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
         <CartesianGrid strokeDasharray="3 3" />
@@ -384,7 +386,7 @@ export default function DashboardClient({
             Analytics Dashboard
           </h1>
           <p className="text-muted-foreground mt-2">
-            Insights and analytics for your team's skills and expertise
+            Insights and analytics for your team&apos;s skills and expertise
           </p>
         </div>
         <div className="flex gap-4">
@@ -705,7 +707,7 @@ export default function DashboardClient({
         <CardHeader>
           <CardTitle>Summary Statistics</CardTitle>
           <CardDescription>
-            Key insights about your team's skills and composition
+            Key insights about your team&apos;s skills and composition
           </CardDescription>
         </CardHeader>
         <CardContent>

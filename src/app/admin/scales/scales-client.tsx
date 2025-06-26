@@ -12,7 +12,7 @@ interface Scale {
   name: string;
   type: string;
   values: string;
-  skills: any[];
+  skills: { id: number; name: string }[];
 }
 
 interface ScalesClientProps {
@@ -166,7 +166,7 @@ export default function ScalesClient({ initialScales }: ScalesClientProps) {
                   required
                 />
                 <p className="text-sm text-muted-foreground">
-                  Examples: "1,2,3,4,5" for numeric, "A,B,C,D,F" for qualitative, "Yes,No" for boolean
+                  Examples: &quot;1,2,3,4,5&quot; for numeric, &quot;A,B,C,D,F&quot; for qualitative, &quot;Yes,No&quot; for boolean
                 </p>
               </div>
               <div className="flex gap-2">

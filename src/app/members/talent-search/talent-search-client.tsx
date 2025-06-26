@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
 import { User, Settings, BookOpen, Eye, Users } from "lucide-react";
 
 interface Member {
@@ -31,7 +30,7 @@ interface Member {
   currentClient: string | null;
   category: string | null;
   location: string | null;
-  profile: any | null;
+  profile: { id: number } | null;
 }
 
 interface KnowledgeArea {
@@ -126,9 +125,9 @@ export default function TalentSearchClient({
   });
 
   const uniqueCategories = [...new Set(members.map((m) => m.category).filter(Boolean))];
-  const uniqueClients = [
-    ...new Set(members.map((m) => m.currentClient).filter(Boolean)),
-  ];
+  // const uniqueClients = [
+  //   ...new Set(members.map((m) => m.currentClient).filter(Boolean)),
+  // ];
   const uniqueLocations = [
     ...new Set(members.map((m) => m.location).filter(Boolean)),
   ];

@@ -34,11 +34,24 @@ async function getFilterData() {
   ]);
 
   return {
-    knowledgeAreas,
-    skillCategories,
-    skills,
-    clients: clients.map(c => c.currentClient).filter(Boolean),
-    memberCategories: memberCategories.map(c => c.category).filter(Boolean)
+    knowledgeAreas: knowledgeAreas.map(ka => ({
+      id: ka.id,
+      name: ka.name,
+      description: ka.description || undefined
+    })),
+    skillCategories: skillCategories.map(sc => ({
+      id: sc.id,
+      name: sc.name,
+      groupingCriteria: sc.groupingCriteria || undefined
+    })),
+    skills: skills.map(skill => ({
+      id: skill.id,
+      name: skill.name,
+      knowledgeArea: skill.knowledgeArea ? { name: skill.knowledgeArea.name } : undefined,
+      category: skill.category ? { name: skill.category.name } : undefined
+    })),
+    clients: clients.map(c => c.currentClient).filter((client): client is string => Boolean(client)),
+    memberCategories: memberCategories.map(c => c.category).filter((category): category is string => Boolean(category))
   };
 }
 

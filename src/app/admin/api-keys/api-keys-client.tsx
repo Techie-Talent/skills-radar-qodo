@@ -64,7 +64,7 @@ export default function ApiKeysClient() {
       } else {
         toast.error('Failed to fetch API keys');
       }
-    } catch (error) {
+    } catch {
       toast.error('Error fetching API keys');
     } finally {
       setLoading(false);
@@ -101,7 +101,7 @@ export default function ApiKeysClient() {
         const error = await response.json();
         toast.error(error.error || 'Failed to create API key');
       }
-    } catch (error) {
+    } catch {
       toast.error('Error creating API key');
     } finally {
       setCreating(false);
@@ -125,7 +125,7 @@ export default function ApiKeysClient() {
         const error = await response.json();
         toast.error(error.error || 'Failed to revoke API key');
       }
-    } catch (error) {
+    } catch {
       toast.error('Error revoking API key');
     }
   };
@@ -276,7 +276,7 @@ export default function ApiKeysClient() {
                 variant="outline"
                 onClick={() => setNewKeyData(null)}
               >
-                I've saved the key
+                I&apos;ve saved the key
               </Button>
             </div>
           </AlertDescription>

@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
 import { Plus, Trash2, Edit, Search, Filter } from 'lucide-react';
 
 interface Member {
@@ -67,7 +66,7 @@ export default function MemberSkillsClient({
   const [memberSkills, setMemberSkills] = useState(member.skills);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
-  const [editingSkill, setEditingSkill] = useState<any>(null);
+  const [editingSkill, setEditingSkill] = useState<Member['skills'][0] | null>(null);
   const [loading, setLoading] = useState(false);
   
   // Filters
@@ -135,7 +134,7 @@ export default function MemberSkillsClient({
         const error = await response.json();
         alert(error.error || 'Failed to add skill');
       }
-    } catch (error) {
+    } catch {
       alert('Error adding skill');
     } finally {
       setLoading(false);
@@ -171,7 +170,7 @@ export default function MemberSkillsClient({
         const error = await response.json();
         alert(error.error || 'Failed to update skill');
       }
-    } catch (error) {
+    } catch {
       alert('Error updating skill');
     } finally {
       setLoading(false);
@@ -194,14 +193,14 @@ export default function MemberSkillsClient({
         const error = await response.json();
         alert(error.error || 'Failed to remove skill');
       }
-    } catch (error) {
+    } catch {
       alert('Error removing skill');
     } finally {
       setLoading(false);
     }
   };
 
-  const openEditDialog = (memberSkill: any) => {
+  const openEditDialog = (memberSkill: Member['skills'][0]) => {
     setEditingSkill(memberSkill);
     setExpertiseLevel(memberSkill.expertiseLevel?.toString() || '');
     setExpertiseDescription(memberSkill.expertiseDescription || '');

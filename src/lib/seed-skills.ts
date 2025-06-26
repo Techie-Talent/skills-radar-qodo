@@ -45,24 +45,24 @@ const KNOWLEDGE_AREAS = {
  * - jane_smith@example.org -> "Jane Smith"
  */
 function inferNameFromEmail(email: string): string | null {
-  if (!email || !email.includes('@')) {
+  if (!email || !email.includes("@")) {
     return null;
   }
 
-  const [localPart] = email.split('@');
-  
+  const [localPart] = email.split("@");
+
   // Handle common separators: dot, underscore, hyphen
   const nameParts = localPart
     .split(/[._-]/)
-    .filter(part => part.length > 0)
-    .map(part => {
+    .filter((part) => part.length > 0)
+    .map((part) => {
       // Capitalize first letter and make rest lowercase
       return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
     });
 
   // Only return a name if we have at least 2 parts (first and last name)
   if (nameParts.length >= 2) {
-    return nameParts.join(' ');
+    return nameParts.join(" ");
   }
 
   // If only one part, capitalize it but it might not be a full name
@@ -75,7 +75,6 @@ function inferNameFromEmail(email: string): string | null {
 
 function parseCSV(csvContent: string): CSVRow[] {
   const lines = csvContent.split("\n");
-  const headers = lines[0].split(";");
   const rows: CSVRow[] = [];
 
   for (let i = 1; i < lines.length; i++) {
@@ -216,7 +215,7 @@ export async function seedSkillsData() {
   for (const email of memberEmails) {
     // Infer name from email if not already provided
     const inferredName = inferNameFromEmail(email);
-    
+
     const member = await prisma.member.upsert({
       where: { email },
       update: {
@@ -228,11 +227,15 @@ export async function seedSkillsData() {
         fullName: inferredName,
       },
     });
-    
+
     if (inferredName) {
-      console.log(`📝 ${member.fullName ? 'Updated' : 'Created'} member "${inferredName}" from email "${email}"`);
+      console.log(
+        `📝 ${
+          member.fullName ? "Updated" : "Created"
+        } member "${inferredName}" from email "${email}"`
+      );
     }
-    
+
     members.set(email, member);
   }
 
@@ -243,7 +246,7 @@ export async function seedSkillsData() {
   const processedCombinations = new Set<string>();
 
   for (const row of csvRows) {
-    const { category, skillName } = extractSkillInfo(row.skill);
+    const { skillName } = extractSkillInfo(row.skill);
 
     if (!skillName || !row.expertiseFullName.trim()) {
       continue; // Skip rows without skill names or expertise levels

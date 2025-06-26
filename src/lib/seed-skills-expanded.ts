@@ -43,7 +43,7 @@ const EXPANDED_KNOWLEDGE_AREAS = {
 // Techie category to member category mapping
 const TECHIE_CATEGORY_MAPPING = {
   "Techie Starter": "Starter",
-  "Techie Builder": "Builder", 
+  "Techie Builder": "Builder",
   "Techie Solver": "Solver",
   "Techie Wizard": "Wizard",
 } as const;
@@ -57,11 +57,11 @@ const TECHIE_CATEGORY_MAPPING = {
 function generateEmailFromName(fullName: string): string {
   const emailLocalPart = fullName
     .toLowerCase()
-    .replace(/[^a-z\s]/g, '') // Remove non-alphabetic characters except spaces
+    .replace(/[^a-z\s]/g, "") // Remove non-alphabetic characters except spaces
     .trim()
     .split(/\s+/) // Split by whitespace
-    .join('.');
-  
+    .join(".");
+
   return `${emailLocalPart}@techietalent.net`;
 }
 
@@ -85,6 +85,7 @@ function parseExpandedCSV(csvContent: string): ExpandedCSVRow[] {
       }
     } catch (error) {
       console.warn(`⚠️  Could not parse line ${i + 1}: ${line}`);
+      console.log(error);
     }
   }
 
@@ -99,7 +100,7 @@ function parseExpandedCSVLine(line: string): ExpandedCSVRow | null {
   try {
     // Parse CSV line with proper handling of quoted values
     const values = parseCSVLine(line);
-    
+
     if (values.length < 7) {
       return null;
     }
@@ -111,7 +112,7 @@ function parseExpandedCSVLine(line: string): ExpandedCSVRow | null {
       techieCategory,
       assignedClient,
       expertise,
-      expertiseRankingStr
+      expertiseRankingStr,
     ] = values;
 
     const expertiseRanking = parseInt(expertiseRankingStr.trim());
@@ -139,7 +140,7 @@ function parseExpandedCSVLine(line: string): ExpandedCSVRow | null {
  */
 function parseCSVLine(line: string): string[] {
   const values: string[] = [];
-  let current = '';
+  let current = "";
   let inQuotes = false;
   let i = 0;
 
@@ -157,10 +158,10 @@ function parseCSVLine(line: string): string[] {
         inQuotes = !inQuotes;
         i++;
       }
-    } else if (char === ',' && !inQuotes) {
+    } else if (char === "," && !inQuotes) {
       // End of field
       values.push(current);
-      current = '';
+      current = "";
       i++;
     } else {
       current += char;
@@ -177,11 +178,17 @@ function parseCSVLine(line: string): string[] {
 /**
  * Get expertise level from description
  */
-function getExpandedExpertiseLevel(expertiseDescription: string): number | null {
+function getExpandedExpertiseLevel(
+  expertiseDescription: string
+): number | null {
   const trimmed = expertiseDescription.trim();
   if (!trimmed) return null;
 
-  return EXPANDED_EXPERTISE_MAPPING[trimmed as keyof typeof EXPANDED_EXPERTISE_MAPPING] || null;
+  return (
+    EXPANDED_EXPERTISE_MAPPING[
+      trimmed as keyof typeof EXPANDED_EXPERTISE_MAPPING
+    ] || null
+  );
 }
 
 /**
@@ -205,7 +212,13 @@ export async function seedSkillsExpandedData() {
   // Log first few parsed rows for debugging
   console.log("📋 Sample parsed rows:");
   csvRows.slice(0, 3).forEach((row, index) => {
-    console.log(`   ${index + 1}. ${row.skillCategory} | ${row.skillName} | ${row.memberName} | ${row.techieCategory} | ${row.assignedClient} | ${row.expertise} | ${row.expertiseRanking}`);
+    console.log(
+      `   ${index + 1}. ${row.skillCategory} | ${row.skillName} | ${
+        row.memberName
+      } | ${row.techieCategory} | ${row.assignedClient} | ${row.expertise} | ${
+        row.expertiseRanking
+      }`
+    );
   });
 
   // Create a default scale for expertise levels
@@ -239,7 +252,9 @@ export async function seedSkillsExpandedData() {
 
   // Create skill categories
   const skillCategories = new Map();
-  for (const [category, categoryName] of Object.entries(EXPANDED_SKILL_CATEGORIES)) {
+  for (const [category, categoryName] of Object.entries(
+    EXPANDED_SKILL_CATEGORIES
+  )) {
     const skillCategory = await prisma.skillCategory.upsert({
       where: { name: categoryName },
       update: {},
@@ -302,8 +317,11 @@ export async function seedSkillsExpandedData() {
 
   for (const [memberName, memberData] of uniqueMembers.entries()) {
     const email = generateEmailFromName(memberName);
-    const memberCategory = TECHIE_CATEGORY_MAPPING[memberData.techieCategory as keyof typeof TECHIE_CATEGORY_MAPPING] || 'Starter';
-    
+    const memberCategory =
+      TECHIE_CATEGORY_MAPPING[
+        memberData.techieCategory as keyof typeof TECHIE_CATEGORY_MAPPING
+      ] || "Starter";
+
     const member = await prisma.member.upsert({
       where: { email },
       update: {
@@ -319,8 +337,12 @@ export async function seedSkillsExpandedData() {
         hireDate: new Date(), // Default to current date
       },
     });
-    
-    console.log(`📝 ${member.id ? 'Updated' : 'Created'} member "${memberName}" (${email})`);
+
+    console.log(
+      `📝 ${
+        member.id ? "Updated" : "Created"
+      } member "${memberName}" (${email})`
+    );
     members.set(memberName, member);
   }
 
@@ -337,7 +359,8 @@ export async function seedSkillsExpandedData() {
 
     const member = members.get(row.memberName);
     const skill = skills.get(row.skillName);
-    const expertiseLevel = getExpandedExpertiseLevel(row.expertise) || row.expertiseRanking;
+    const expertiseLevel =
+      getExpandedExpertiseLevel(row.expertise) || row.expertiseRanking;
 
     if (member && skill) {
       const combinationKey = `${member.id}-${skill.id}`;

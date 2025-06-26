@@ -68,7 +68,7 @@ async function testWrapper() {
       console.log('❌ No output received');
     }
   } catch (error) {
-    console.log('❌ Failed to parse JSON response:', error.message);
+    console.log('❌ Failed to parse JSON response:', error instanceof Error ? error.message : String(error));
   }
 }
 

@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     const includeProfile = searchParams.get('include_profile') === 'true';
 
     // Build where clause
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     // Name filter
     if (name) {

@@ -69,7 +69,7 @@ class MCPStdioWrapper {
         id: requestId,
         error: {
           code: -32700,
-          message: `Parse error: ${error.message}`
+          message: `Parse error: ${error instanceof Error ? error.message : String(error)}`
         }
       };
       stdout.write(JSON.stringify(errorResponse) + '\n');
@@ -261,7 +261,7 @@ class MCPStdioWrapper {
         id: id ?? null,
         error: {
           code: -32603,
-          message: `Internal error: ${error.message}`
+          message: `Internal error: ${error instanceof Error ? error.message : String(error)}`
         }
       };
     }

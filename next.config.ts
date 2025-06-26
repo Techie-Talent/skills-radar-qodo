@@ -2,14 +2,11 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Enable standalone output for Docker deployment
-  output: 'standalone',
-  
+  output: "standalone",
+
   // Experimental features
-  experimental: {
-    // Enable server components
-    serverComponentsExternalPackages: ['@prisma/client'],
-  },
-  
+  serverExternalPackages: ["@prisma/client"],
+
   // Environment variables that should be available at build time
   env: {
     DATABASE_URL: process.env.DATABASE_URL,

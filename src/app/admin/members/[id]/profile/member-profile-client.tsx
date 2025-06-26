@@ -4,11 +4,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Save, User, Briefcase, Heart, MessageSquare, Clock, ArrowLeft } from 'lucide-react';
 
 interface Member {
@@ -55,7 +53,7 @@ export default function MemberProfileClient({ member }: MemberProfileClientProps
         const error = await response.json();
         alert(error.error || 'Failed to update profile');
       }
-    } catch (error) {
+    } catch {
       alert('Error updating profile');
     } finally {
       setLoading(false);

@@ -1,6 +1,6 @@
-import { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import { prisma } from './prisma';
+import { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import { prisma } from "./prisma";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,8 +10,8 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (account?.provider === 'google') {
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
         try {
           // Check if user exists
           const existingUser = await prisma.user.findUnique({
@@ -46,13 +46,13 @@ export const authOptions: NextAuthOptions = {
 
           return true;
         } catch (error) {
-          console.error('Error during sign in:', error);
+          console.error("Error during sign in:", error);
           return false;
         }
       }
       return true;
     },
-    async session({ session, token }) {
+    async session({ session }) {
       if (session.user?.email) {
         const user = await prisma.user.findUnique({
           where: { email: session.user.email },
@@ -72,17 +72,18 @@ export const authOptions: NextAuthOptions = {
         if (user) {
           session.user.id = user.id;
           session.user.role = user.role;
-          session.user.permissions = user.role?.permissions.map(rp => rp.permission) || [];
+          session.user.permissions =
+            user.role?.permissions.map((rp) => rp.permission) || [];
         }
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token }) {
       return token;
     },
   },
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
