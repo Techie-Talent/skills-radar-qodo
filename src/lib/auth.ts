@@ -1,6 +1,7 @@
 import { NextAuthOptions, Profile } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "./prisma";
+import { determineUserRole, isAdminUser, getDefaultRoleName } from "./role-utils";
 
 // Helper function to check if hosted domain is allowed
 function isHostedDomainAllowed(
@@ -65,19 +66,25 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!existingUser) {
-            // Get default role for new users
-            const defaultRole = await prisma.role.findFirst({
-              where: { isDefault: true },
-            });
+            // Determine role for new user using utility function
+            const roleToAssign = await determineUserRole(user.email!);
+            
+            // Log role assignment for debugging
+            if (isAdminUser(user.email!)) {
+              console.log(`Assigning Admin role to ${user.email} (found in admin users list)`);
+            } else {
+              const defaultRoleName = getDefaultRoleName();
+              console.log(`Assigning '${roleToAssign?.name || 'unknown'}' role to ${user.email} (default: ${defaultRoleName})`);
+            }
 
-            // Create user with default role, including hosted domain info
+            // Create user with determined role
             await prisma.user.create({
               data: {
                 email: user.email!,
                 name: user.name,
                 image: user.image,
                 googleId: account.providerAccountId,
-                roleId: defaultRole?.id,
+                roleId: roleToAssign?.id,
                 lastLoginAt: new Date(),
               },
             });
