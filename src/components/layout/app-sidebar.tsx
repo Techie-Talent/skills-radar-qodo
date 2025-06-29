@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Users,
   Brain,
@@ -14,7 +14,9 @@ import {
   Upload,
   Home,
   Key,
-} from 'lucide-react';
+  Building2,
+  MessageSquare,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -27,89 +29,113 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import PermissionGuard from '@/components/auth/permission-guard';
-import SignInButton from '@/components/auth/sign-in-button';
+} from "@/components/ui/sidebar";
+import PermissionGuard from "@/components/auth/permission-guard";
+import SignInButton from "@/components/auth/sign-in-button";
 
 const navigationItems = [
   {
-    title: 'Overview',
+    title: "Overview",
     items: [
       {
-        title: 'Home',
-        url: '/',
+        title: "Home",
+        url: "/",
         icon: Home,
-        permission: 'dashboard.read',
+        permission: "dashboard.read",
       },
       {
-        title: 'Dashboard',
-        url: '/dashboard',
+        title: "Dashboard",
+        url: "/dashboard",
         icon: LayoutDashboard,
-        permission: 'dashboard.read',
+        permission: "dashboard.read",
       },
       {
-        title: 'Team Members',
-        url: '/members/talent-search',
+        title: "Members",
+        url: "/members/talent-search",
         icon: Users,
-        permission: 'members.read',
+        permission: "members.read",
+      },
+      {
+        title: "Teams",
+        url: "/teams",
+        icon: Building2,
+        permission: "members.read",
       },
     ],
   },
   {
-    title: 'Data Management',
+    title: "Data Management",
     items: [
       {
-        title: 'Knowledge Areas',
-        url: '/admin/knowledge-areas',
+        title: "Knowledge Areas",
+        url: "/admin/knowledge-areas",
         icon: Brain,
-        permission: 'knowledge_areas.read',
+        permission: "knowledge_areas.read",
       },
       {
-        title: 'Skill Categories',
-        url: '/admin/skill-categories',
+        title: "Skill Categories",
+        url: "/admin/skill-categories",
         icon: Tags,
-        permission: 'skill_categories.read',
+        permission: "skill_categories.read",
       },
       {
-        title: 'Skills',
-        url: '/admin/skills',
+        title: "Skills",
+        url: "/admin/skills",
         icon: Zap,
-        permission: 'skills.read',
+        permission: "skills.read",
       },
       {
-        title: 'Scales',
-        url: '/admin/scales',
+        title: "Scales",
+        url: "/admin/scales",
         icon: BarChart3,
-        permission: 'scales.read',
+        permission: "scales.read",
       },
     ],
   },
   {
-    title: 'Administration',
+    title: "Administration",
     items: [
       {
-        title: 'Data Imports',
-        url: '/admin/imports',
+        title: "Data Imports",
+        url: "/admin/imports",
         icon: Upload,
-        permission: 'members.write',
+        permission: "members.write",
       },
       {
-        title: 'User Management',
-        url: '/admin/users',
+        title: "User Management",
+        url: "/admin/users",
         icon: UserCog,
-        permission: 'users.read',
+        permission: "users.read",
       },
       {
-        title: 'Role Management',
-        url: '/admin/roles',
+        title: "Role Management",
+        url: "/admin/roles",
         icon: Settings,
-        permission: 'roles.read',
+        permission: "roles.read",
       },
       {
-        title: 'API Keys',
-        url: '/admin/api-keys',
+        title: "API Keys",
+        url: "/admin/api-keys",
         icon: Key,
-        permission: 'admin.manage',
+        permission: "admin.manage",
+      },
+      {
+        title: "Public Profiles",
+        url: "/admin/profiles",
+        icon: Users,
+        permission: "members.write",
+      },
+      {
+        title: "Teams Management",
+        url: "/admin/teams",
+        icon: Building2,
+        permission: "members.write",
+      },
+      {
+        title: "Points System",
+        url: "/admin/points",
+        icon: MessageSquare,
+        permission: "admin.manage",
       },
     ],
   },
@@ -141,7 +167,10 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
-                  <PermissionGuard key={item.title} permission={item.permission}>
+                  <PermissionGuard
+                    key={item.title}
+                    permission={item.permission}
+                  >
                     <SidebarMenuItem>
                       <SidebarMenuButton
                         asChild

@@ -7,7 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { prisma } from '@/lib/prisma';
-import { User, Calendar, MapPin, Building, Settings, BookOpen } from 'lucide-react';
+import { User, Calendar, MapPin, Building, Settings, BookOpen, ExternalLink, Gift } from 'lucide-react';
+import { GivePointsDialog } from '@/components/give-points-dialog';
 
 async function getMemberWithSkills(id: string) {
   const member = await prisma.member.findUnique({
@@ -95,7 +96,7 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
                 <h1 className="text-3xl font-bold">{member.fullName || 'Unnamed Member'}</h1>
                 <p className="text-muted-foreground mt-2">{member.email}</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Button asChild>
                   <Link href={`/admin/members/${member.id}/skills`}>
                     <BookOpen className="h-4 w-4 mr-2" />
@@ -108,6 +109,29 @@ export default async function MemberDetailPage({ params }: { params: Promise<{ i
                     Manage Profile
                   </Link>
                 </Button>
+                {member.username && member.profile?.isPublic && (
+                  <Button variant="outline" asChild>
+                    <Link href={`/member/${member.username}`} target="_blank">
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      View Public Profile
+                    </Link>
+                  </Button>
+                )}
+                <GivePointsDialog 
+                  members={[{ 
+                    id: member.id, 
+                    fullName: member.fullName, 
+                    email: member.email, 
+                    username: member.username 
+                  }]}
+                  currentMemberId={1} // TODO: Get from session
+                  trigger={
+                    <Button variant="outline">
+                      <Gift className="h-4 w-4 mr-2" />
+                      Give Points
+                    </Button>
+                  }
+                />
                 <Button variant="outline" asChild>
                   <Link href={`/members/talent-search`}>
                     <Settings className="h-4 w-4 mr-2" />

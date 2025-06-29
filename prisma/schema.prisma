@@ -54,8 +54,14 @@ model Member {
   currentClient String?
   category      String?        // e.g., Starter, Builder, Solver, Wizard
   location      String?
+  username      String?        @unique // Generated from email first part
   profile       MemberProfile?
   skills        MemberSkill[]
+  teamMembers   TeamMember[]
+  feedbackGiven Feedback[]     @relation("FeedbackGiver")
+  feedbackReceived Feedback[]  @relation("FeedbackReceiver")
+  pointsGiven   Point[]        @relation("PointGiver")
+  pointsReceived Point[]       @relation("PointReceiver")
 }
 
 model MemberSkill {
@@ -82,6 +88,15 @@ model MemberProfile {
   clientAppreciations String? // JSON or text
   feedback           String?  // JSON or text
   talentPoolPeriods  String?  // JSON or text
+  isPublic           Boolean  @default(false)
+  showSkills         Boolean  @default(true)
+  showAssignments    Boolean  @default(true)
+  showTeamRoles      Boolean  @default(true)
+  showAppreciations  Boolean  @default(true)
+  showFeedback       Boolean  @default(false)
+  showTalentPool     Boolean  @default(true)
+  bio                String?
+  profileImageUrl    String?
 }
 
 // Authentication and Authorization Models
@@ -146,4 +161,77 @@ model ApiKey {
 
   @@index([keyHash])
   @@index([ownerId])
+}
+
+// Team and Feedback Models
+model Team {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  description String?
+  parentTeam  Team?        @relation("TeamHierarchy", fields: [parentTeamId], references: [id])
+  parentTeamId Int?
+  subTeams    Team[]       @relation("TeamHierarchy")
+  members     TeamMember[]
+  feedback    Feedback[]   @relation("TeamFeedback")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model TeamMember {
+  id       Int      @id @default(autoincrement())
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId   Int
+  member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId Int
+  role     String?  // e.g., "Lead", "Developer", "Designer"
+  joinedAt DateTime @default(now())
+
+  @@unique([teamId, memberId])
+}
+
+model Feedback {
+  id           Int       @id @default(autoincrement())
+  content      String
+  rating       Int?      // Optional 1-5 rating
+  isAnonymous  Boolean   @default(false)
+  giver        Member?   @relation("FeedbackGiver", fields: [giverId], references: [id])
+  giverId      Int?
+  receiver     Member?   @relation("FeedbackReceiver", fields: [receiverId], references: [id])
+  receiverId   Int?
+  team         Team?     @relation("TeamFeedback", fields: [teamId], references: [id])
+  teamId       Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Note: Either feedback is for a member OR a team, not both (enforced in application logic)
+}
+
+// Points System Models
+model PointPeriod {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique // e.g., "January 2024", "February 2024"
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  isClosed    Boolean  @default(false)
+  pointsPerMember Int  @default(3) // Points each member can give per period
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  points      Point[]
+}
+
+model Point {
+  id           Int         @id @default(autoincrement())
+  amount       Int         // 1, 2, or 3 points
+  message      String?     // Optional message with the points
+  giver        Member      @relation("PointGiver", fields: [giverId], references: [id])
+  giverId      Int
+  receiver     Member      @relation("PointReceiver", fields: [receiverId], references: [id])
+  receiverId   Int
+  period       PointPeriod @relation(fields: [periodId], references: [id])
+  periodId     Int
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([giverId, receiverId, periodId]) // One point allocation per giver-receiver-period
 }

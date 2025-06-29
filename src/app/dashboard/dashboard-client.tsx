@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart,
   Bar,
@@ -28,6 +29,7 @@ import {
   ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { PointsDashboard } from "@/components/points-dashboard";
 
 interface Member {
   id: number;
@@ -402,6 +404,14 @@ export default function DashboardClient({
         </div>
       </div>
 
+      <Tabs defaultValue="skills" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="skills">Skills Analytics</TabsTrigger>
+          <TabsTrigger value="points">Points Dashboard</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="skills" className="space-y-6">
+
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
@@ -746,6 +756,12 @@ export default function DashboardClient({
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+        
+        <TabsContent value="points" className="space-y-6">
+          <PointsDashboard />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
