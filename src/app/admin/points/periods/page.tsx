@@ -68,7 +68,7 @@ export default async function PointPeriodsPage() {
   );
 
   return (
-    <PermissionGuard permission="admin.read">
+    <PermissionGuard permission="admin.manage">
       <SidebarLayout
         breadcrumbs={[
           { label: "Home", href: "/" },

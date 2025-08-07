@@ -131,7 +131,7 @@ export default async function PointsOverviewPage() {
   const data = await getPointsOverview();
 
   return (
-    <PermissionGuard permission="admin.read">
+    <PermissionGuard permission="admin.manage">
       <SidebarLayout breadcrumbs={[
         { label: 'Home', href: '/' },
         { label: 'Admin', href: '/admin' },
